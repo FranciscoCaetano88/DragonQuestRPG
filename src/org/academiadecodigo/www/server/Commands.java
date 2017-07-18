@@ -5,6 +5,7 @@ package org.academiadecodigo.www.server;
  */
 public enum Commands {
 
+    //Player Commands
     CD("cd"),
     LS("ls"),
     PICK("pick"),
@@ -13,6 +14,8 @@ public enum Commands {
     ATTACK("attack"),
     DEFEND("defend"),
     INTERACT("interact"),
+
+    //Server Commands
     PM("/pm"),
     KICK("/kick");
 

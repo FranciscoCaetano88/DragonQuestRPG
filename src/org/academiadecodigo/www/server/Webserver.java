@@ -77,7 +77,7 @@ public class Webserver {
                 userName = in.readLine();
 
                 send("****** Your username is: " + userName + " ******");
-                System.out.println("****** " + userName + ": logged in ******");
+                System.out.println("****** " + userName + ": logged in ******\n");
                 sendAll("****** " + userName + " logged in channel ******");
 
                 String msg;
