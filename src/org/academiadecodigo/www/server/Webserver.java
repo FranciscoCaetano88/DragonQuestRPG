@@ -60,9 +60,11 @@ public class Webserver {
 
         private Socket clientSocket;
         private String userName;
+        private CommandParser commandParser;
 
         private ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
+            this.commandParser = new CommandParser();
 
         }
 
@@ -85,6 +87,8 @@ public class Webserver {
                 while (true) {
                     msg = in.readLine();
 
+                    validateCommand(msg);
+
                     if (msg == null) {
                         System.out.println("****** " + userName + ": logged out ******");
                         break;
@@ -97,6 +101,24 @@ public class Webserver {
 
             } catch (IOException e) {
                 System.err.println("****** FAILED TO RECEIVE MESSAGE ****** " + e.getMessage());
+
+            }
+
+        }
+
+        private void validateCommand(String msg) {
+            commandParser.split(msg);
+
+            Commands command = Commands.whichCommand(commandParser.getCommand());
+
+            if (command == null) {
+                return;
+            }
+
+            switch (command) {
+
+                case PM:
+                    System.out.println("****** I'm HERE ******");
 
             }
 

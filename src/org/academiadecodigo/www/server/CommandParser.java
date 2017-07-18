@@ -12,7 +12,7 @@ public class CommandParser {
     public void split(String command) {
 
         if (command.equals("") || (command.trim().isEmpty())) {
-            System.err.println("****** Command not Found ******");
+            System.out.println("****** Command not Found ******");
             return;
         }
 
