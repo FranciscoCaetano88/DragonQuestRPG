@@ -65,6 +65,7 @@ public class Webserver {
         private ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
             this.commandParser = new CommandParser();
+            this.userName = "";
 
         }
 
@@ -75,27 +76,32 @@ public class Webserver {
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-                send("Please Insert your username:");
-                userName = in.readLine();
+                while (userName.trim().equals("")) {
+                    send("Please Insert your username:");
+                    userName = in.readLine();
+
+                    validateUsername();
+
+                }
 
                 send("****** Your username is: " + userName + " ******");
-                System.out.println("****** " + userName + ": logged in ******\n");
-                sendAll("****** " + userName + " logged in channel ******");
+                System.out.println("****** " + userName + ": logged in ******");
+                sendAll("****** " + userName + " logged in ******");
 
-                String msg;
+                String msg = "";
 
                 while (true) {
                     msg = in.readLine();
 
-                    validateCommand(msg);
-
                     if (msg == null) {
-                        System.out.println("****** " + userName + ": logged out ******");
+                        System.out.println("****** " + userName + ": logged out ******\n");
                         break;
 
                     }
 
-                    sendAll("< " + userName + "_> " + msg);
+                    handle(msg);
+
+                    send("< " + userName + "_> " + msg);
 
                 }
 
@@ -106,7 +112,8 @@ public class Webserver {
 
         }
 
-        private void validateCommand(String msg) {
+        private void handle(String msg) {
+
             commandParser.split(msg);
 
             Commands command = Commands.whichCommand(commandParser.getCommand());
@@ -118,8 +125,27 @@ public class Webserver {
             switch (command) {
 
                 case PM:
-                    System.out.println("****** I'm HERE ******");
+                    System.out.println("I'm Here!");
+                    break;
 
+                case GENERAL:
+                    sendAll("< " + userName + "_> " + commandParser.getText());
+                    break;
+
+            }
+
+        }
+
+        private void validateUsername() {
+
+            if (userName.split(" ").length > 1) {
+                send("Your Username can't contain blank spaces");
+                userName = "";
+            }
+
+            if (userName.length() > 10) {
+                send("Your Username has to be less than 10 characters");
+                userName = "";
             }
 
         }
@@ -183,4 +209,3 @@ public class Webserver {
     }
 
 }
-

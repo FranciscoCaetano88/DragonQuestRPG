@@ -17,7 +17,8 @@ public enum Commands {
 
     //Server Commands
     PM("/pm"),
-    KICK("/kick");
+    KICK("/kick"),
+    GENERAL("/gm");
 
     private String command;
 
@@ -64,6 +65,9 @@ public enum Commands {
 
             case "/kick":
                 return KICK;
+
+            case "/gm":
+                return GENERAL;
 
         }
 
