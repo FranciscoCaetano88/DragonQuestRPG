@@ -6,7 +6,7 @@ public class CommandParser {
     private String text = "";
 
     /**
-     * Splits a String depending on the input
+     * Splits a String
      * @param command    String type
      */
     public void split(String command) {
@@ -56,8 +56,9 @@ public class CommandParser {
      * @return          String type
      */
     public String getText() {
+        text = "";
 
-        for (int i = 1; i < command.length; i++) {
+        for (int i = 2; i < command.length; i++) {
             text = text + command[i] + " ";
         }
 

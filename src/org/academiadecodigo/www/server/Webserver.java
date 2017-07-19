@@ -1,5 +1,7 @@
 package org.academiadecodigo.www.server;
 
+import org.academiadecodigo.www.FileManager;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,6 +12,8 @@ import java.util.concurrent.Executors;
 public class Webserver {
 
     final private int PORT = 6969;
+    private CommandParser commandParser;
+    private FileManager fileManager;
 
     //State: Shared and mutable
     private CopyOnWriteArrayList<ClientHandler> list;
@@ -17,6 +21,12 @@ public class Webserver {
     public static void main(String[] args) {
         Webserver webserver = new Webserver();
         webserver.start();
+
+    }
+
+    public Webserver() {
+        this.commandParser = new CommandParser();
+        this.fileManager = new FileManager();
 
     }
 
@@ -60,11 +70,10 @@ public class Webserver {
 
         private Socket clientSocket;
         private String userName;
-        private CommandParser commandParser;
+        private String password;
 
         private ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
-            this.commandParser = new CommandParser();
             this.userName = "";
 
         }
@@ -76,18 +85,30 @@ public class Webserver {
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
+                //Username Check
                 while (userName.trim().equals("")) {
-                    send("Please Insert your username:");
+                    send("Please Insert your Username:");
                     userName = in.readLine();
 
                     validateUsername();
-
                 }
 
-                send("****** Your username is: " + userName + " ******");
-                System.out.println("****** " + userName + ": logged in ******");
-                sendAll("****** " + userName + " logged in ******");
+                //Password Check
+                while (password.trim().equals("")) {
+                    send("Please Enter your Password:");
+                    password = in.readLine();
 
+                    validatePassword();
+                }
+
+                //File Check Users
+                if (!checkUser()) {
+                    fileManager.write("users", userName);
+                }
+
+                logInMessage();
+
+                //Begin Game Thread
                 String msg = "";
 
                 while (true) {
@@ -95,13 +116,15 @@ public class Webserver {
 
                     if (msg == null) {
                         System.out.println("****** " + userName + ": logged out ******\n");
+                        removeClient();
                         break;
+                    }
 
+                    if (msg.trim().equals("")) {
+                        continue;
                     }
 
                     handle(msg);
-
-                    send("< " + userName + "_> " + msg);
 
                 }
 
@@ -112,6 +135,42 @@ public class Webserver {
 
         }
 
+        private void logInMessage() {
+            send("****** Your username is: " + userName + " ******");
+            System.out.println("****** " + userName + ": logged in ******");
+            sendAll("****** " + userName + " logged in ******");
+        }
+
+        private void removeClient() {
+            for (ClientHandler ch : list) {
+                if (ch.getUserName().equals(userName)) {
+                    list.remove(this);
+                }
+            }
+        }
+
+        private boolean checkUser() {
+
+            try {
+                String user = fileManager.read("users");
+                String[] users = user.split("\n");
+
+                for (int i = 0; i < users.length; i++) {
+                    if (users[i].equals(userName)) {
+                        System.out.println(list.get(i).userName);
+                        return true;
+                    }
+                }
+
+            } catch (IOException e) {
+                System.err.println("File not found!" + e.getMessage());
+
+            }
+
+            return false;
+
+        }
+
         private void handle(String msg) {
 
             commandParser.split(msg);
@@ -119,17 +178,15 @@ public class Webserver {
             Commands command = Commands.whichCommand(commandParser.getCommand());
 
             if (command == null) {
+                sendAll("< " + userName + "_> " + msg);
                 return;
             }
 
             switch (command) {
 
                 case PM:
-                    System.out.println("I'm Here!");
-                    break;
-
-                case GENERAL:
-                    sendAll("< " + userName + "_> " + commandParser.getText());
+                    System.out.println("Send message to this Username: " + commandParser.getActionCommand());
+                    System.out.println("The message is: " + commandParser.getText());
                     break;
 
             }
@@ -148,6 +205,13 @@ public class Webserver {
                 userName = "";
             }
 
+        }
+
+        private void validatePassword() {
+            if ((password.length() < 3) && (password.length() > 10)) {
+                send("Your Password has to be less than 10 characters");
+                password = "";
+            }
         }
 
         private void send(String msg) {
