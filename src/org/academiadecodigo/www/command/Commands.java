@@ -1,4 +1,4 @@
-package org.academiadecodigo.www.commandstrategy;
+package org.academiadecodigo.www.command;
 
 public enum Commands {
 
@@ -16,7 +16,8 @@ public enum Commands {
     PM("/pm"),
     KICK("/kick"),
     LIST("/list"),
-    COMMANDS("/commands");
+    COMMANDS("/commands"),
+    EXIT("/exit");
 
 
     private String command;
@@ -26,12 +27,12 @@ public enum Commands {
     }
 
     /**
-     * Determines which Player commandstrategy is at stake
+     * Determines which Player command is at stake
      *
      * @param command           String command
      * @return                  command
      */
-    public static Commands whichCommand(String command) {
+    public static Commands which(String command) {
 
         switch (command) {
 
@@ -60,7 +61,6 @@ public enum Commands {
                 return INTERACT;
 
             case "/pm":
-
                 return PM;
 
             case "/kick":
@@ -71,6 +71,9 @@ public enum Commands {
 
             case "/commands":
                 return COMMANDS;
+
+            case "/exit":
+                return EXIT;
 
         }
 

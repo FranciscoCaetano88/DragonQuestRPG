@@ -1,8 +1,7 @@
 package org.academiadecodigo.www.server;
 
-import org.academiadecodigo.www.commandstrategy.command.PM;
-import org.academiadecodigo.www.commandstrategy.CommandParser;
-import org.academiadecodigo.www.commandstrategy.Commands;
+import org.academiadecodigo.www.command.CommandParser;
+import org.academiadecodigo.www.command.Commands;
 import org.academiadecodigo.www.FileManager;
 
 import java.io.*;
@@ -30,7 +29,6 @@ public class Webserver {
     public Webserver() {
         this.commandParser = new CommandParser();
         this.fileManager = new FileManager();
-        init();
 
     }
 
@@ -67,11 +65,6 @@ public class Webserver {
             c.send(msg);
 
         }
-
-    }
-
-    private void init() {
-        new PM();
 
     }
 
@@ -234,7 +227,7 @@ public class Webserver {
 
             commandParser.split(msg);
 
-            Commands command = Commands.whichCommand(commandParser.getCommand());
+            Commands command = Commands.which(commandParser.getCommand());
 
             if (command == null) {
                 sendAll("< " + userName + "_> " + msg);
@@ -255,6 +248,15 @@ public class Webserver {
                 case COMMANDS:
                     listCommands();
                     break;
+
+                case EXIT:
+                    System.out.println("****** LOGING OUT ******");
+                    try {
+                        this.clientSocket.close();
+                        closeCommand();
+                    } catch (IOException e) {
+                        System.err.println("Failed to close Socket " + e.getMessage());
+                    }
 
             }
 

@@ -97,10 +97,7 @@ public class Client {
 
             switch (command) {
 
-                case "!exit":
-                    System.out.println("****** LOGING OUT ******");
-                    Thread.currentThread().interrupt();
-                    System.exit(-1);
+
 
             }
 
