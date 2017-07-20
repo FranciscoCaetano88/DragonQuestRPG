@@ -123,7 +123,7 @@ public class Webserver {
 
                     if (msg == null) {
                         System.out.println("****** " + userName + ": logged out ******\n");
-                        closeCommand();
+                        removeFromList();
                         break;
                     }
 
@@ -142,11 +142,19 @@ public class Webserver {
 
         }
 
-        private void closeCommand() {
+        /**
+         * Remove client from the list
+         */
+        private void removeFromList() {
             list.remove(this);
 
         }
 
+        /**
+         * Method to validate a user name in the register
+         * @param userName                  String
+         * @return                          String
+         */
         private String validate(String userName) {
 
             if (userName.split(" ").length > 1) {
@@ -170,6 +178,28 @@ public class Webserver {
 
         }
 
+        /**
+         * Simple message when user logs in
+         */
+        private void logInMessage() {
+            send("****** Your username is: " + userName + " ******");
+            System.out.println("****** " + userName + ": logged in ******");
+            sendAll("****** " + userName + " logged in ******");
+        }
+
+        /**
+         * Lists all clients logged in
+         */
+        private void listClients() {
+            for (ClientHandler ch : list) {
+                send(ch.getUserName());
+
+            }
+
+        }
+
+        /**
+         * TODO: Need to think about this
         private String validateP(String password) {
             if (password.length() > 10) {
                 send("Your Password has to be less than 10 characters");
@@ -183,22 +213,12 @@ public class Webserver {
             }
 
             return password;
-        }
+        }*/
 
-        private void logInMessage() {
-            send("****** Your username is: " + userName + " ******");
-            System.out.println("****** " + userName + ": logged in ******");
-            sendAll("****** " + userName + " logged in ******");
-        }
 
-        private void listClients() {
-            for (ClientHandler ch : list) {
-                send(ch.getUserName());
 
-            }
-
-        }
-
+        /**
+         * TODO: Check if users already logged in, (saved in a file)
         private boolean checkUser() {
 
             try {
@@ -221,8 +241,13 @@ public class Webserver {
 
             return false;
 
-        }
+        }*/
 
+
+        /**
+         * Handles command actions
+         * @param msg       String
+         */
         private void handle(String msg) {
 
             commandParser.split(msg);
@@ -250,10 +275,10 @@ public class Webserver {
                     break;
 
                 case EXIT:
-                    System.out.println("****** LOGING OUT ******");
+                    send("****** LOGING OUT ******");
                     try {
                         this.clientSocket.close();
-                        closeCommand();
+                        removeFromList();
                     } catch (IOException e) {
                         System.err.println("Failed to close Socket " + e.getMessage());
                     }
@@ -262,6 +287,9 @@ public class Webserver {
 
         }
 
+        /**
+         * Lists all commands
+         */
         private void listCommands() {
             for (Commands c : Commands.values()) {
                 send(c.getCommand());
@@ -270,19 +298,11 @@ public class Webserver {
 
         }
 
-        private void send(String msg) {
-
-            try {
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                out.println(msg);
-
-            } catch (IOException e) {
-                System.err.println("****** FAILED TO WRITE MESSAGE ****** " + e.getMessage());
-
-            }
-
-        }
-
+        /**
+         * Send a private message to a specific user
+         * @param username                  String
+         * @param msg                       String
+         */
         private void sendPrivate(String username, String msg) {
 
             for (ClientHandler ch : list) {
@@ -298,6 +318,23 @@ public class Webserver {
                     }
 
                 }
+
+            }
+
+        }
+
+        /**
+         * Send a reply of the message
+         * @param msg           String
+         */
+        private void send(String msg) {
+
+            try {
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                out.println(msg);
+
+            } catch (IOException e) {
+                System.err.println("****** FAILED TO WRITE MESSAGE ****** " + e.getMessage());
 
             }
 
