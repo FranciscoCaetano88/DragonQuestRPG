@@ -13,18 +13,12 @@ public class FileManager {
 
     public void write(String fileName, String content) throws IOException {
 
-        //File file = new File(FILE_PATH + fileName + FILE_EXTENSION);
-
-        //BufferedWriter bWriter = new BufferedWriter(fileWriter);
-
         PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(FILE_PATH + fileName + FILE_EXTENSION, true)));
 
-        //bWriter.write(content);
         printWriter.println(content);
 
         System.out.println("FILE SAVED");
-
-        //bWriter.close();
+        
         printWriter.close();
 
     }

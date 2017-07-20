@@ -1,5 +1,8 @@
 package org.academiadecodigo.www.server;
 
+import org.academiadecodigo.www.commandstrategy.command.PM;
+import org.academiadecodigo.www.commandstrategy.CommandParser;
+import org.academiadecodigo.www.commandstrategy.Commands;
 import org.academiadecodigo.www.FileManager;
 
 import java.io.*;
@@ -27,6 +30,7 @@ public class Webserver {
     public Webserver() {
         this.commandParser = new CommandParser();
         this.fileManager = new FileManager();
+        init();
 
     }
 
@@ -66,6 +70,11 @@ public class Webserver {
 
     }
 
+    private void init() {
+        new PM();
+
+    }
+
     private class ClientHandler implements Runnable {
 
         private Socket clientSocket;
@@ -75,6 +84,7 @@ public class Webserver {
         private ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
             this.userName = "";
+            this.password = "";
 
         }
 
@@ -86,25 +96,29 @@ public class Webserver {
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 //Username Check
-                while (userName.trim().equals("")) {
+                String username = "";
+                while (username.trim().equals("")) {
                     send("Please Insert your Username:");
-                    userName = in.readLine();
+                    username = in.readLine();
 
-                    validateUsername();
+                    username = validate(username);
                 }
+                this.userName = username;
 
-                //Password Check
+                /*//Password Check
+                String password = "";
                 while (password.trim().equals("")) {
                     send("Please Enter your Password:");
                     password = in.readLine();
 
-                    validatePassword();
+                    password = validateP(password);
                 }
+                this.password = password;
 
                 //File Check Users
                 if (!checkUser()) {
-                    fileManager.write("users", userName);
-                }
+                    fileManager.write("users", userName + ":" + password);
+                }*/
 
                 logInMessage();
 
@@ -116,7 +130,7 @@ public class Webserver {
 
                     if (msg == null) {
                         System.out.println("****** " + userName + ": logged out ******\n");
-                        removeClient();
+                        closeCommand();
                         break;
                     }
 
@@ -135,28 +149,73 @@ public class Webserver {
 
         }
 
+        private void closeCommand() {
+            list.remove(this);
+
+        }
+
+        private String validate(String userName) {
+
+            if (userName.split(" ").length > 1) {
+                send("Your Username can't contain blank spaces");
+                return "";
+            }
+
+            if (userName.length() > 10) {
+                send("Your Username has to be less than 10 characters");
+                return "";
+            }
+
+            for (ClientHandler ch : list) {
+                if (ch.getUserName().equals(userName)) {
+                    send("This username already exists");
+                    return "";
+                }
+            }
+
+            return userName;
+
+        }
+
+        private String validateP(String password) {
+            if (password.length() > 10) {
+                send("Your Password has to be less than 10 characters");
+                return "";
+            }
+
+
+            if (!this.password.equals(password)) {
+                send("Wrong password");
+                return "";
+            }
+
+            return password;
+        }
+
         private void logInMessage() {
             send("****** Your username is: " + userName + " ******");
             System.out.println("****** " + userName + ": logged in ******");
             sendAll("****** " + userName + " logged in ******");
         }
 
-        private void removeClient() {
+        private void listClients() {
             for (ClientHandler ch : list) {
-                if (ch.getUserName().equals(userName)) {
-                    list.remove(this);
-                }
+                send(ch.getUserName());
+
             }
+
         }
 
         private boolean checkUser() {
 
             try {
                 String user = fileManager.read("users");
-                String[] users = user.split("\n");
+                String[] line = user.split("\n");
+                String[] users;
 
-                for (int i = 0; i < users.length; i++) {
-                    if (users[i].equals(userName)) {
+                for (int i = 0; i < line.length; i++) {
+                    users = line[i].split(":");
+                    if (line[i].equals(userName)) {
                         System.out.println(list.get(i).userName);
                         return true;
                     }
@@ -182,36 +241,31 @@ public class Webserver {
                 return;
             }
 
+
             switch (command) {
 
                 case PM:
-                    System.out.println("Send message to this Username: " + commandParser.getActionCommand());
-                    System.out.println("The message is: " + commandParser.getText());
+                    sendPrivate(commandParser.getActionCommand(), commandParser.getText());
+                    break;
+
+                case LIST:
+                    listClients();
+                    break;
+
+                case COMMANDS:
+                    listCommands();
                     break;
 
             }
 
         }
 
-        private void validateUsername() {
+        private void listCommands() {
+            for (Commands c : Commands.values()) {
+                send(c.getCommand());
 
-            if (userName.split(" ").length > 1) {
-                send("Your Username can't contain blank spaces");
-                userName = "";
             }
 
-            if (userName.length() > 10) {
-                send("Your Username has to be less than 10 characters");
-                userName = "";
-            }
-
-        }
-
-        private void validatePassword() {
-            if ((password.length() < 3) && (password.length() > 10)) {
-                send("Your Password has to be less than 10 characters");
-                password = "";
-            }
         }
 
         private void send(String msg) {
@@ -227,48 +281,37 @@ public class Webserver {
 
         }
 
+        private void sendPrivate(String username, String msg) {
+
+            for (ClientHandler ch : list) {
+                if (ch.getUserName().equals(username)) {
+
+                    try {
+                        PrintWriter out = new PrintWriter(ch.getClientSocket().getOutputStream(), true);
+                        out.println("private message: < " + this.userName + "_> " + msg);
+
+                    } catch (IOException e) {
+                        System.err.println("Found a problem with the client socket" + e.getMessage());
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        private Socket getClientSocket() {
+            return clientSocket;
+        }
+
         private String getUserName() {
             return this.userName;
         }
 
-        private void closeCommand() {
-            list.remove(this);
-
+        private String getPassword() {
+            return password;
         }
-
-        private void listCommand() {
-            for (ClientHandler c : list) {
-                send(c.getUserName());
-
-            }
-
-        }
-
-
-        /*
-        private void logCommand() {
-
-            try {
-                FileReader reader = new FileReader(FILE_PATH);
-                BufferedReader fileBReader = new BufferedReader(reader);
-
-                String line = "";
-
-                send("##LOG##");
-                while ((line = fileBReader.readLine()) != null) {
-                    send(line);
-
-                }
-
-            } catch (FileNotFoundException e) {
-                System.err.println("****** CAN'T READ FILE ****** " + e.getMessage());
-
-            } catch (IOException e) {
-                System.err.println("****** CAN'T READ LINE FROM BUFFER ****** " + e.getMessage());
-
-            }
-
-        }*/
 
     }
 

@@ -1,4 +1,4 @@
-package org.academiadecodigo.www.server;
+package org.academiadecodigo.www.commandstrategy;
 
 public class CommandParser {
 
@@ -12,7 +12,7 @@ public class CommandParser {
     public void split(String command) {
 
         if (command.equals("") || (command.trim().isEmpty())) {
-            System.out.println("****** Command not Found ******");
+            System.out.println("****** commandstrategy not Found ******");
             return;
         }
 

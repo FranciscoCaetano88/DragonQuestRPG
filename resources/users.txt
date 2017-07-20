@@ -2,3 +2,5 @@ Arkiver
 king
 kiver
 mario
+Mario
+Chico

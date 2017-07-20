@@ -1,11 +1,8 @@
-package org.academiadecodigo.www.server;
+package org.academiadecodigo.www.commandstrategy;
 
-/**
- * Created by codecadet on 18/07/17.
- */
 public enum Commands {
 
-    //Player Commands
+    //Player command
     CD("cd"),
     LS("ls"),
     PICK("pick"),
@@ -15,9 +12,12 @@ public enum Commands {
     DEFEND("defend"),
     INTERACT("interact"),
 
-    //Server Commands
+    //Server command
     PM("/pm"),
-    KICK("/kick");
+    KICK("/kick"),
+    LIST("/list"),
+    COMMANDS("/commands");
+
 
     private String command;
 
@@ -26,10 +26,10 @@ public enum Commands {
     }
 
     /**
-     * Determines which Player Command is at stake
+     * Determines which Player commandstrategy is at stake
      *
      * @param command           String command
-     * @return                  Commands
+     * @return                  command
      */
     public static Commands whichCommand(String command) {
 
@@ -60,10 +60,17 @@ public enum Commands {
                 return INTERACT;
 
             case "/pm":
+
                 return PM;
 
             case "/kick":
                 return KICK;
+
+            case "/list":
+                return LIST;
+
+            case "/commands":
+                return COMMANDS;
 
         }
 
@@ -71,13 +78,8 @@ public enum Commands {
 
     }
 
-    public static void listCommands() {
-
-        for (Commands pc : Commands.values()) {
-            System.out.println(pc);
-
-        }
-
+    public String getCommand() {
+        return command;
     }
 
 }
