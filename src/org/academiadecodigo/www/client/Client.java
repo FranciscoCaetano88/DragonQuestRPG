@@ -106,32 +106,50 @@ public class Client {
             commandParser.split(message);
             Commands command = Commands.getByValue(commandParser.getCommand());
 
+            if (command == null) {
+                return;
+            }
+
             switch (command) {
 
                 case CD:
+                    System.out.println("CD");
                     break;
 
                 case LS:
+                    System.out.println("LS");
                     break;
 
                 case MAP:
+                    System.out.println("MAP");
                     break;
 
                 case PICK:
+                    System.out.println("PICK");
                     break;
 
                 case INTERACT:
+                    System.out.println("INTERACT");
                     break;
 
                 case INVENTORY:
+                    System.out.println("INVENTORY");
                     break;
 
                 case ATTACK:
+                    System.out.println("ATTACK");
                     break;
 
                 case DEFEND:
+                    System.out.println("DEFEND");
                     break;
-                    
+
+                case EXIT:
+                    Thread.currentThread().interrupt();
+                    System.exit(-1);
+                    break;
+
+
             }
 
         }

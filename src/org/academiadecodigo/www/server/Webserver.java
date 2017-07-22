@@ -122,7 +122,7 @@ public class Webserver {
                     msg = in.readLine();
 
                     if (msg == null) {
-                        System.out.println("****** " + userName + ": logged out ******\n");
+                        System.out.println("\n****** " + userName + ": logged out ******");
                         removeFromList();
                         break;
                     }
@@ -280,7 +280,6 @@ public class Webserver {
                 case EXIT:
                     send("****** LOGING OUT ******");
                     removeFromList();
-                    System.exit(-1);
 
             }
 
@@ -310,6 +309,7 @@ public class Webserver {
                     try {
                         PrintWriter out = new PrintWriter(ch.getClientSocket().getOutputStream(), true);
                         out.println("private message: < " + this.userName + "_> " + msg);
+                        return;
 
                     } catch (IOException e) {
                         System.err.println("Found a problem with the client socket" + e.getMessage());
@@ -317,6 +317,8 @@ public class Webserver {
                     }
 
                 }
+
+                send("Couldn't find that user");
 
             }
 
