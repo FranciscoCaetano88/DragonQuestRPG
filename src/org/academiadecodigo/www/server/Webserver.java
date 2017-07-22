@@ -252,7 +252,7 @@ public class Webserver {
 
             commandParser.split(msg);
 
-            Commands command = Commands.which(commandParser.getCommand());
+            Commands command = Commands.getByValue(commandParser.getCommand());
 
             if (command == null) {
                 sendAll("< " + userName + "_> " + msg);
@@ -274,14 +274,13 @@ public class Webserver {
                     listCommands();
                     break;
 
+                case KICK:
+                    break;
+
                 case EXIT:
                     send("****** LOGING OUT ******");
-                    try {
-                        this.clientSocket.close();
-                        removeFromList();
-                    } catch (IOException e) {
-                        System.err.println("Failed to close Socket " + e.getMessage());
-                    }
+                    removeFromList();
+                    System.exit(-1);
 
             }
 

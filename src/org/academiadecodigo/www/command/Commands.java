@@ -1,5 +1,8 @@
 package org.academiadecodigo.www.command;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Commands {
 
     //Player command
@@ -19,70 +22,30 @@ public enum Commands {
     COMMANDS("/commands"),
     EXIT("/exit");
 
-
     private String command;
 
-    Commands(String command) {
+    private static final Map<String, Commands> COMMAND_MAP = new HashMap<>();
+
+    private Commands(String command) {
         this.command = command;
     }
 
-    /**
-     * Determines which Player command is at stake
-     *
-     * @param command           String command
-     * @return                  command
-     */
-    public static Commands which(String command) {
-
-        switch (command) {
-
-            case "cd":
-                return CD;
-
-            case "ls":
-                return LS;
-
-            case "pick":
-                return PICK;
-
-            case "map":
-                return MAP;
-
-            case "inv":
-                return INVENTORY;
-
-            case "attack":
-                return ATTACK;
-
-            case "defend":
-                return DEFEND;
-
-            case "interact":
-                return INTERACT;
-
-            case "/pm":
-                return PM;
-
-            case "/kick":
-                return KICK;
-
-            case "/list":
-                return LIST;
-
-            case "/commands":
-                return COMMANDS;
-
-            case "/exit":
-                return EXIT;
-
+    static {
+        for (Commands c : values()) {
+            COMMAND_MAP.put(c.getCommand(), c);
         }
-
-        return null;
-
     }
 
     public String getCommand() {
         return command;
+    }
+
+    public static Commands getByValue(String command) {
+        return COMMAND_MAP.get(command);
+    }
+
+    public String toString() {
+        return name();
     }
 
 }

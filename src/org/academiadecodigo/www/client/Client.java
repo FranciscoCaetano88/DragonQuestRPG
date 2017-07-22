@@ -1,5 +1,8 @@
 package org.academiadecodigo.www.client;
 
+import org.academiadecodigo.www.command.CommandParser;
+import org.academiadecodigo.www.command.Commands;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,11 +16,16 @@ public class Client {
 
     final private int PORT = 6969;
     final private String HOST = "localhost";
+    private CommandParser commandParser;
 
     public static void main(String[] args) {
         Client client = new Client();
         client.start();
 
+    }
+
+    public Client() {
+        this.commandParser = new CommandParser();
     }
 
     public void start() {
@@ -93,12 +101,37 @@ public class Client {
 
         }
 
-        private void commandHandler(String command) {
+        private void commandHandler(String message) {
+
+            commandParser.split(message);
+            Commands command = Commands.getByValue(commandParser.getCommand());
 
             switch (command) {
 
+                case CD:
+                    break;
 
+                case LS:
+                    break;
 
+                case MAP:
+                    break;
+
+                case PICK:
+                    break;
+
+                case INTERACT:
+                    break;
+
+                case INVENTORY:
+                    break;
+
+                case ATTACK:
+                    break;
+
+                case DEFEND:
+                    break;
+                    
             }
 
         }
