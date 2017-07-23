@@ -1,0 +1,35 @@
+-- Welcome to the Home Tutorial! --
+...
+In this introduction we'll teach the basics of the game and how it operates.
+This is your Home.
+This zone will be your safe place.
+Where you can recover from your many adventures.
+...
+In the world of DragonQuest everything is built upon writing commands.
+You can list your commands by typing "/commands".
+Try it out:
+Good! Now you know what's at your disposal as far as command wise.
+...
+If you use the "ls" command you'll see what's in your surroudings.
+Type "ls":
+This are the objects you can interact with.
+There are many ways you can interact with them:
+. You can use the "interact" command
+. the "pick" command
+. or the "attack" command
+...
+Try out one of these:
+Good! You are a quick learner!
+Each of this interaction commands might create chain events,
+such as:
+. quests
+. access to the item with the "inventory" command
+. a simple story or description of the object
+...
+In the DragonQuest World there are many ways to move around in the World Map.
+You can go: "north", "south", "east" or "west".
+...
+If you need to know useful commands along the way, just type "man" to get the manual page.
+...
+You are now ready to start your adventure!
+Good luck and hf. :3
